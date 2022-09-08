@@ -1,0 +1,35 @@
+{
+  "name": "manager",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "framer-motion": "^1.7.0",
+    "html-react-parser": "^1.4.13",
+    "next": "12.1.6",
+    "next-auth": "^4.10.3",
+    "react": "18.1.0",
+    "react-cropper": "^2.1.8",
+    "react-date-time-picker-popup": "^1.0.3",
+    "react-datepicker": "^4.8.0",
+    "react-dom": "18.1.0",
+    "react-icons": "^4.3.1",
+    "react-image-crop": "^8.6.12",
+    "react-reveal": "^1.2.2",
+    "react-topbar-progress-indicator": "^4.1.1",
+    "sass": "^1.52.1",
+    "styled-components": "^5.3.5",
+    "suneditor": "^2.43.8",
+    "suneditor-react": "^3.4.0"
+  },
+  "devDependencies": {
+    "eslint": "8.16.0",
+    "eslint-config-next": "12.1.6"
+  }
+}

@@ -6,7 +6,6 @@ export const Content = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     a {
       background-color: #dc9763;
       padding: 10px 20px;

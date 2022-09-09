@@ -568,4 +568,12 @@ export default {
     let { data: json } = await api.get(`/categories/product/private`);
     return json;
   },
+
+  orderItens: async (itens) => {
+    let body = new FormData();
+    body.append("itens", itens);
+
+    let { data: json } = await api.post(`/order`, body);
+    return json;
+  },
 };

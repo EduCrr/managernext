@@ -445,3 +445,18 @@ input:checked + .slider:before {
   height: 100%;
   z-index: 99;
 }
+
+.containerDrag {
+  background-color: red;
+  padding: 10px;
+  margin: 0.5rem auto;
+  width: 90%;
+  z-index: 1001;
+  text-align: left;
+}
+
+.contentDrag {
+  width: 100%;
+  text-align: left;
+  z-index: 1001;
+}

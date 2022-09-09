@@ -7,6 +7,7 @@ import { Modal } from "../Modal";
 import { AnimatePresence } from "framer-motion";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { useSession } from "next-auth/react";
+import { Ordernar } from "../Ordenar";
 export const CatItens = ({ categorys }) => {
   const [cats, setCats] = useState(categorys);
   const [modal, setModal] = useState(false);
@@ -56,6 +57,7 @@ export const CatItens = ({ categorys }) => {
 
   return (
     <C.Content>
+      <Ordernar dataItens={cats.categories} />
       {loading && <TopBarProgress />}
       <div className="init">
         <h2>Categorias</h2>

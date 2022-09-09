@@ -39,7 +39,7 @@ class MyDocument extends Document {
               __html: themeInitializerScript,
             }}
           ></script>
-          <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" />
+          {/* <Script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js" /> */}
         </body>
       </Html>
     );

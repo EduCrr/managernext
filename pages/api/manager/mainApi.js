@@ -10,6 +10,11 @@ export default {
     return json;
   },
 
+  getTeste: async () => {
+    let { data: json } = await api.get(`/teste`);
+    return json;
+  },
+
   changeVisivel: async (id, check, link, token) => {
     api.defaults.headers.Authorization = `Bearer ${token}`;
     if (link === "posts") {

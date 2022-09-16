@@ -1,9 +1,13 @@
 import Link from "next/link";
 import * as C from "../styles/Site/teste";
 import { motion } from "framer-motion";
+import mainApi from "./api/manager/mainApi";
+import { useState } from "react";
 
-const Teste = () => {
+const Teste = ({ teste }) => {
   const easing = [0.6, -0.05, 0.01, 0.99];
+  const [info, setInfo] = useState(teste.info);
+  const [idioma, setIdioma] = useState("0");
 
   const fadeInUp = {
     initial: {
@@ -28,15 +32,27 @@ const Teste = () => {
     },
   };
 
+  console.log(info[0]);
+
+  const handleIdioma = (e) => {
+    setIdioma(e.target.value);
+  };
+
   return (
     <C.Content>
+      <select onChange={handleIdioma}>
+        <option value="0">Pt</option>
+        <option value="1">en</option>
+      </select>
       <div className="left">
         <h3>Teste</h3>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco
-        </p>
+        {info.map((item, k) => (
+          <div key={k}>
+            <p>{item.id}</p>
+            <p>{item.idiomas[idioma].titulo}</p>
+            <p>{item.idiomas[idioma].descricao}</p>
+          </div>
+        ))}
         <Link href="/">
           <button>Back</button>
         </Link>
@@ -55,3 +71,13 @@ const Teste = () => {
 };
 
 export default Teste;
+
+export const getServerSideProps = async (context) => {
+  const teste = await mainApi.getTeste();
+
+  return {
+    props: {
+      teste,
+    },
+  };
+};

@@ -34,7 +34,7 @@ export const ModalError = ({ setModalErro, text }) => {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="modalSuccess"
+        className="modalError"
       >
         <div className="contentModal">
           <h2>Erro</h2>

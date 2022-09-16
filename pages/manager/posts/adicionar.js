@@ -3,7 +3,8 @@ import * as C from "../../../components/Manager/FormContentSingle/styles";
 import { useState, useEffect, useRef } from "react";
 import { FaFileAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import blogApi from "../../api/blogApi";
+import postApi from "../../api/manager/postApi";
+import categoria from "../../api/manager/categoria";
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
 import "react-datepicker/dist/react-datepicker.css";
@@ -28,6 +29,10 @@ const Adicionar = () => {
   const [description, setDescription] = useState("");
   const [categorys, setCategorys] = useState([]);
   const [title, setTitle] = useState("");
+  const [tituloPagina, setTituloPagina] = useState("");
+  const [tituloCom, setTituloCom] = useState("");
+  const [descricaoPagina, setDescricaoPagina] = useState("");
+  const [descricaoCom, setDescricaoCom] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
   const [day, setDay] = useState("");
@@ -50,7 +55,7 @@ const Adicionar = () => {
 
   useEffect(() => {
     const categories = async () => {
-      let json = await blogApi.getCategories();
+      let json = await categoria.getCategories();
       if (json.error !== "") {
         console(json.error);
       } else {
@@ -109,8 +114,12 @@ const Adicionar = () => {
 
     let banner = b64toBlob(resultBanner);
 
-    const json = await blogApi.addPost(
+    const json = await postApi.addPost(
       title,
+      tituloPagina,
+      tituloCom,
+      descricaoPagina,
+      descricaoCom,
       description,
       activeCategory,
       banner,
@@ -121,8 +130,11 @@ const Adicionar = () => {
     if (json.error === "") {
       setModalSucess(true);
       setTitle("");
-      setDescription("");
-      setTitle("");
+      setDescription(null);
+      setTituloCom("");
+      setTituloPagina("");
+      setDescricaoCom("");
+      setDescricaoPagina("");
       setActiveCategory("");
       setBannerFile("");
       setDay("");
@@ -227,6 +239,7 @@ const Adicionar = () => {
               setOptions={opitons}
               onChange={handleChange}
               value={description}
+              defaultValue=""
               placeholder="Escreva aqui..."
               onImageUploadBefore={handleImageUploadBefore}
             />
@@ -256,7 +269,30 @@ const Adicionar = () => {
               setShowCropImg={setShowCropBanner}
               setChangeBanner={setChangeBanner}
             />
-
+            <input
+              placeholder="Título da página"
+              type="text"
+              value={tituloPagina}
+              onChange={(e) => setTituloPagina(e.target.value)}
+            />
+            <input
+              placeholder="Descrição da página"
+              type="text"
+              value={descricaoPagina}
+              onChange={(e) => setDescricaoPagina(e.target.value)}
+            />
+            <input
+              placeholder="Título exibido ao compartilhar"
+              type="text"
+              value={tituloCom}
+              onChange={(e) => setTituloCom(e.target.value)}
+            />
+            <input
+              placeholder="Descrição exibida ao compartilhar"
+              type="text"
+              value={descricaoCom}
+              onChange={(e) => setDescricaoCom(e.target.value)}
+            />
             <button type="submit">Adicionar post</button>
           </form>
         </motion.div>

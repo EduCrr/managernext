@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import blogApi from "../../../pages/api/blogApi";
 import * as C from "./styles";
-
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import arrayMove from "array-move";
-export const Ordernar = ({ dataItens }) => {
+import { useSession } from "next-auth/react";
+import mainApi from "../../../pages/api/manager/mainApi";
+
+export const Ordernar = ({ dataItens, setShowOrdernar, link }) => {
   const easing = [0.6, -0.05, 0.01, 0.99];
+  const { data: session } = useSession();
 
   const fadeInUp = {
     initial: {
@@ -46,6 +48,7 @@ export const Ordernar = ({ dataItens }) => {
     return (
       <div className="containerDrag" key={value.id} index={index}>
         <p>{value.name}</p>
+        <p>{value.title}</p>
       </div>
     );
   });
@@ -56,23 +59,19 @@ export const Ordernar = ({ dataItens }) => {
     }
 
     let itensOrder = JSON.stringify(dataItens);
-    let json = await blogApi.orderItens(itensOrder);
+    let json = await mainApi.orderItens(itensOrder, link, session.user.token);
   };
 
   return (
     <C.Content>
-      <motion.div
-        variants={fadeInUp}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="modal"
-      >
+      <div className="modal">
         <div className="contentModal">
+          <div onClick={() => setShowOrdernar(false)} className="close-modal">
+            &times;
+          </div>
           <SortableList items={dataItens} onSortEnd={onSortEnd} axis="y" />
         </div>
-      </motion.div>
-      <div class="overlay"></div>
+      </div>
     </C.Content>
   );
 };

@@ -2,7 +2,7 @@ import { Default } from "../../../../components/Manager/Default";
 import * as C from "../../../../styles/Manager/editar";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import blogApi from "../../../api/blogApi";
+import slidesApi from "../../../api/manager/slidesApi";
 import { useRouter } from "next/router";
 import { CropFiles } from "../../../../components/Manager/CropFiles";
 import { CropItens } from "../../../../components/Manager/CropItens";
@@ -50,10 +50,10 @@ const Editar = ({ slide }) => {
   const handleSaveForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.updateSlide(title, id, session.user.token);
+    let json = await slidesApi.updateSlide(title, id, session.user.token);
     let imagem = b64toBlob(resultBanner);
 
-    let jsonImagem = await blogApi.updateSlideImagem(
+    let jsonImagem = await slidesApi.updateSlideImagem(
       imagem,
       id,
       session.user.token
@@ -71,8 +71,8 @@ const Editar = ({ slide }) => {
     <Default>
       <C.Content>
         <motion.div initial="hidden" animate="enter" exit="exit">
-          <h2>{title}</h2>
           <form className="globalForm" onSubmit={handleSaveForm}>
+            <p className="nameInput">Título</p>
             <input
               placeholder="Titulo"
               value={title}
@@ -116,7 +116,7 @@ const Editar = ({ slide }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const slide = await blogApi.getSingleSlide(context.query.id);
+  const slide = await slidesApi.getSingleSlide(context.query.id);
   const session = await unstable_getServerSession(
     context.req,
     context.res,

@@ -2,7 +2,14 @@ import styled from "styled-components";
 
 export const Content = styled.div`
   padding: 20px;
+  .align {
+    display: flex;
+    align-items: baseline;
 
+    svg {
+      margin-left: 20px;
+    }
+  }
   .add {
     display: flex;
     justify-content: flex-end;

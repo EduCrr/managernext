@@ -2,7 +2,6 @@ import { Default } from "../../../../components/Manager/Default";
 import * as C from "../../../../styles/Manager/editar";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import blogApi from "../../../api/blogApi";
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
 import { FaTrash, FaFileAlt } from "react-icons/fa";
@@ -16,6 +15,8 @@ import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { ModalSucess } from "../../../../components/Manager/ModalSucess";
 import { ModalError } from "../../../../components/Manager/ModalError";
+import produtoApi from "../../../api/manager/produtoApi";
+import categoria from "../../../api/manager/categoria";
 const SunEditor = dynamic(() => import("suneditor-react"), {
   ssr: false,
 });
@@ -29,6 +30,17 @@ const Editar = ({ product }) => {
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [title, setTitle] = useState(product.product.title);
+  const [tituloPagina, setTituloPagina] = useState(
+    product.product.titulo_pagina
+  );
+  const [tituloCom, setTituloCom] = useState(product.product.descricao_pagina);
+  const [descricaoPagina, setDescricaoPagina] = useState(
+    product.product.titulo_compartilhamento
+  );
+  const [descricaoCom, setDescricaoCom] = useState(
+    product.product.descricao_compartilhamento
+  );
+
   const [idImgDel, setIdImgDel] = useState(null);
   const [activeCategory, setActiveCategory] = useState(
     product.product.categorie_product_id
@@ -73,7 +85,7 @@ const Editar = ({ product }) => {
 
   useEffect(() => {
     const categories = async () => {
-      let json = await blogApi.getCategoriesProductsPrivate();
+      let json = await categoria.getCategoriesProductsPrivate();
       if (json.error !== "") {
         console(json.error);
       } else {
@@ -125,7 +137,7 @@ const Editar = ({ product }) => {
   const handlePhotos = async (e) => {
     e.preventDefault();
     setLoading(true);
-    let json = await blogApi.updateImage(fotoField, id, session.user.token);
+    let json = await produtoApi.updateImage(fotoField, id, session.user.token);
     if (json.error !== "") {
       setModalErro(true);
       setTextErro("Não foi possível adicionar uma imagem!");
@@ -134,9 +146,9 @@ const Editar = ({ product }) => {
     } else {
       setModalSucess(true);
       setLoading(false);
-      if (modalSucess === false) {
-        router.reload(window.location.pathname);
-      }
+      setImgFile([]);
+      let jsonproduct = await produtoApi.getSingleProduct(id);
+      setProduto(jsonproduct.product);
     }
   };
 
@@ -161,8 +173,12 @@ const Editar = ({ product }) => {
   const handleSaveForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.updateProduct(
+    let json = await produtoApi.updateProduct(
       title,
+      tituloPagina,
+      tituloCom,
+      descricaoPagina,
+      descricaoCom,
       description,
       activeCategory,
       id,
@@ -176,7 +192,7 @@ const Editar = ({ product }) => {
     } else {
       if (changeBanner === true && resultBanner !== null) {
         let banner = b64toBlob(resultBanner);
-        let json = await blogApi.updateBannerProduct(
+        let json = await produtoApi.updateBannerProduct(
           banner,
           id,
           session.user.token
@@ -196,7 +212,7 @@ const Editar = ({ product }) => {
 
       if (changeBanner === true && resultCapa !== null) {
         let capa = b64toBlob(resultCapa);
-        let json = await blogApi.updateCapaProduct(
+        let json = await produtoApi.updateCapaProduct(
           capa,
           id,
           session.user.token
@@ -218,13 +234,14 @@ const Editar = ({ product }) => {
     <Default>
       <C.Content>
         <motion.div initial="hidden" animate="enter" exit="exit">
-          <h2>{title}</h2>
           <form className="globalForm" onSubmit={handleSaveForm}>
+            <p className="nameInput">Título</p>
             <input
               placeholder="Titulo"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+            <p className="nameInput">Categoria</p>
             <select
               value={activeCategory}
               onChange={(e) => setActiveCategory(e.target.value)}
@@ -236,6 +253,8 @@ const Editar = ({ product }) => {
                 </option>
               ))}
             </select>
+
+            <p className="nameInput">Descrição</p>
             <SunEditor
               required
               setOptions={opitons}
@@ -261,6 +280,34 @@ const Editar = ({ product }) => {
               path={`${pathCapa}/${produto.capa}`}
               setShowCropImg={setShowCropCapa}
               setResult={setResultCapa}
+            />
+            <p className="nameInput">Título da página</p>
+            <input
+              placeholder="Título da página"
+              type="text"
+              value={tituloPagina}
+              onChange={(e) => setTituloPagina(e.target.value)}
+            />
+            <p className="nameInput">Descrição da página</p>
+            <input
+              placeholder="Descrição da página"
+              type="text"
+              value={descricaoPagina}
+              onChange={(e) => setDescricaoPagina(e.target.value)}
+            />
+            <p className="nameInput">Título exibido ao compartilhar</p>
+            <input
+              placeholder="Título exibido ao compartilhar"
+              type="text"
+              value={tituloCom}
+              onChange={(e) => setTituloCom(e.target.value)}
+            />
+            <p className="nameInput">Descrição exibida ao compartilhar</p>
+            <input
+              placeholder="Descrição exibida ao compartilhar"
+              type="text"
+              value={descricaoCom}
+              onChange={(e) => setDescricaoCom(e.target.value)}
             />
 
             <button type="submit">Salvar</button>
@@ -312,11 +359,7 @@ const Editar = ({ product }) => {
                     <div className="photo">
                       <img alt="" src={item} />
                     </div>
-                    <div className="btns">
-                      <button>
-                        <FaTrash />
-                      </button>
-                    </div>
+                    <div className="btns"></div>
                   </div>
                 ))}
             </div>
@@ -380,7 +423,7 @@ const Editar = ({ product }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const product = await blogApi.getSingleProduct(context.query.id);
+  const product = await produtoApi.getSingleProduct(context.query.id);
   const session = await unstable_getServerSession(
     context.req,
     context.res,

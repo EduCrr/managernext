@@ -6,7 +6,6 @@ export const Content = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   .paginas {
-    background-color: #ddd;
     width: 900px;
     margin: auto;
     padding: 3rem 0px;

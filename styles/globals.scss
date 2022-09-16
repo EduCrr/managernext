@@ -136,10 +136,9 @@ html ::-webkit-scrollbar-thumb {
   }
 
   button {
-    margin-top: 40px;
     cursor: pointer;
     width: fit-content;
-    z-index: 98;
+    // z-index: 98;
   }
 }
 .categoryLibrary {
@@ -415,7 +414,7 @@ input:checked + .slider:before {
   top: 1%;
   right: 2rem;
   font-size: 5rem;
-  color: var(--color-primar);
+  color: white;
   cursor: pointer;
   border: none;
   background: none;
@@ -447,9 +446,11 @@ input:checked + .slider:before {
 }
 
 .containerDrag {
-  background-color: red;
+  background-color: var(--color-menu-background);
+  color: var(--color-primary);
   padding: 10px;
   margin: 0.5rem auto;
+  border-radius: 15px;
   width: 90%;
   z-index: 1001;
   text-align: left;
@@ -459,4 +460,28 @@ input:checked + .slider:before {
   width: 100%;
   text-align: left;
   z-index: 1001;
+}
+
+.paginas {
+  background-color: var(--color-menu-background);
+  color: var(--color-primary);
+}
+
+.cropButton {
+  cursor: pointer;
+  margin-left: 10px;
+  border: 0;
+  border-radius: 5px;
+  outline: 0;
+  padding: 10px 20px;
+  background-color: var(--color-form-background);
+  color: var(--color-primary);
+}
+.nameInput {
+  font-weight: 550;
+  font-size: 14px;
+  color: #6c6c6c;
+}
+.nameInput:first-child {
+  margin-top: 20px;
 }

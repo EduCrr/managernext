@@ -1,19 +1,22 @@
 import * as C from "../Itens/styles";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaListOl } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import blogApi from "../../../pages/api/blogApi";
 import { Modal } from "../Modal";
 import { AnimatePresence } from "framer-motion";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { useSession } from "next-auth/react";
+import { Ordernar } from "../Ordenar";
+import Slide from "react-reveal/Slide";
+import slidesApi from "../../../pages/api/manager/slidesApi";
 
 export const Slides = ({ slides }) => {
   const [slidesItens, setSlidesItens] = useState(slides);
   const [modal, setModal] = useState(false);
   const [idImgDel, setIdImgDel] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showOrdernar, setShowOrdernar] = useState(false);
 
   TopBarProgress.config({
     barColors: {
@@ -34,7 +37,7 @@ export const Slides = ({ slides }) => {
   };
 
   const getSlides = async () => {
-    let json = await blogApi.getSlidesPrivate();
+    let json = await slidesApi.getSlidesPrivate();
     if (json.error === "") {
       console.log(json);
       setSlidesItens(json);
@@ -51,15 +54,23 @@ export const Slides = ({ slides }) => {
       v = false;
     }
     setLoading(true);
-    let json = await blogApi.changeVisivelSlide(id, v, session.user.token);
+    let json = await slidesApi.changeVisivelSlide(id, v, session.user.token);
     setLoading(false);
     getSlides();
   };
 
   return (
     <C.Content>
-      {loading && <TopBarProgress />}
-      <h2>Slides</h2>
+      <div className="align">
+        {loading && <TopBarProgress />}
+        <h2>Slides</h2>
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowOrdernar(!showOrdernar)}
+        >
+          <FaListOl />
+        </div>
+      </div>
       <div className="add">
         <Link href="/manager/slide/adicionar">
           <button>Adicionar</button>
@@ -117,6 +128,17 @@ export const Slides = ({ slides }) => {
         ))}
       </div>
 
+      <Slide when={showOrdernar} bottom>
+        <div className={showOrdernar === true ? "modalBg" : ""}>
+          {showOrdernar && (
+            <Ordernar
+              dataItens={slidesItens.slides}
+              setShowOrdernar={setShowOrdernar}
+              link={slidesItens.link}
+            />
+          )}
+        </div>
+      </Slide>
       <AnimatePresence exitBeforeEnter>
         {modal && (
           <Modal

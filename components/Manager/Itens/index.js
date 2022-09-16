@@ -8,11 +8,13 @@ import {
   FaChevronRight,
   FaChevronLeft,
   FaCog,
+  FaListOl,
 } from "react-icons/fa";
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import blogApi from "../../../pages/api/blogApi";
+import mainApi from "../../../pages/api/manager/mainApi";
+import categoriaApi from "../../../pages/api/manager/categoria";
 import { AnimatePresence } from "framer-motion";
 import { Modal } from "../Modal";
 import TopBarProgress from "react-topbar-progress-indicator";
@@ -20,6 +22,8 @@ import { useSession } from "next-auth/react";
 import Slide from "react-reveal/Slide";
 import { PaginasContent } from "../PaginasContent";
 let page = 1;
+import { Ordernar } from "../Ordenar";
+import categoria from "../../../pages/api/manager/categoria";
 
 export const Itens = ({ iten, categorys, img, pagina }) => {
   const [valueCat, setValueCat] = useState("");
@@ -29,20 +33,34 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
   const [categories, setCategories] = useState(categorys.categories);
   const [activeCategory, setActiveCategory] = useState(false);
   const [dataItes, setDataItens] = useState(iten.itens);
+  const [orderData, setOrderData] = useState([]);
   const [modal, setModal] = useState(false);
   const [idImgDel, setIdImgDel] = useState(null);
+  const [showOrdernar, setShowOrdernar] = useState(false);
 
   const [modalPagina, setModalPagina] = useState(false);
+
+  const loadingData = async () => {
+    const jsonPosts = await mainApi.getData(page, iten.link, valueCat);
+    setDataItens([]);
+    setDataItens(jsonPosts.itens);
+  };
   function handleClick(e) {
     //e.target onde/quem foi clicado
     if (e.target.classList.contains("modalBg")) {
       setModalPagina(false);
+      setShowOrdernar(false);
+      loadingData();
     }
   }
+
+  console.log(dataItes);
 
   const escFunction = useCallback((event) => {
     if (event.key === "Escape") {
       setModalPagina(false);
+      setShowOrdernar(false);
+      loadingData();
     }
   }, []);
 
@@ -56,8 +74,6 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
 
   let path = iten.path;
 
-  console.log(iten);
-
   TopBarProgress.config({
     barColors: {
       0: "#21f356",
@@ -65,9 +81,6 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
     },
     shadowBlur: 5,
   });
-
-  console.log(iten.link);
-
   const handleDeleteImg = async (id) => {
     setModal(!modal);
     setIdImgDel(id);
@@ -78,10 +91,14 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
   const handleMorePosts = async () => {
     page += 1;
     if (activeCategory === true) {
-      const json = await blogApi.getSingleCategory(valueCat, page, iten.link);
+      const json = await categoriaApi.getSingleCategory(
+        valueCat,
+        page,
+        iten.link
+      );
       setDataItens(json.itens);
     } else {
-      const json = await blogApi.getData(page, iten.link);
+      const json = await mainApi.getData(page, iten.link, valueCat);
       setDataItens(json.itens);
     }
   };
@@ -89,10 +106,14 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
   const handleLessPosts = async () => {
     page -= 1;
     if (activeCategory === true) {
-      const json = await blogApi.getSingleCategory(valueCat, page, iten.link);
+      const json = await categoriaApi.getSingleCategory(
+        valueCat,
+        page,
+        iten.link
+      );
       setDataItens(json.itens);
     } else {
-      const json = await blogApi.getData(page, iten.link);
+      const json = await mainApi.getData(page, iten.link, valueCat);
       setDataItens(json.itens);
     }
   };
@@ -105,13 +126,13 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
     console.log(e);
     if (e !== "0") {
       setActiveCategory(true);
-      let json = await blogApi.getSingleCategory(e, page, iten.link);
+      let json = await categoriaApi.getSingleCategory(e, page, iten.link);
       setDataItens([]);
       setDataItens(json.itens);
     }
     if (e === "0") {
       setActiveCategory(false);
-      let json = await blogApi.getData(page, iten.link);
+      let json = await mainApi.getData(page, iten.link, valueCat);
       setDataItens(json.itens);
     }
   };
@@ -121,22 +142,27 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
     if (q !== "") {
       setActiveSearch(true);
       setValueCat("0");
-      console.log(q);
-      let json = await blogApi.search(q, iten.link);
+      let json = await mainApi.search(q, iten.link);
       setDataItens(json.itens);
     } else {
       setActiveSearch(false);
       page = 1;
-      let json = await blogApi.getData(page, iten.link);
+      let json = await mainApi.getData(page, iten.link, valueCat);
       setDataItens(json.itens);
     }
   };
 
   const handleVisivel = async (id, check, activeCategory, e) => {
     setLoading(true);
-    let json = await blogApi.changeVisivel(
+    let v = null;
+    if (check === 1) {
+      v = true;
+    } else if (check === 0) {
+      v = false;
+    }
+    let json = await mainApi.changeVisivel(
       id,
-      check,
+      v,
       iten.link,
       session.user.token
     );
@@ -148,10 +174,12 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
       return;
     } else {
       if (activeSerch === true) {
-        let jsonSearch = await blogApi.search(q, iten.link);
+        let jsonSearch = await mainApi.search(q, iten.link);
+        console.log(jsonSearch.itens);
+        setDataItens([]);
         setDataItens(jsonSearch.itens);
       } else if (activeCategory === true && e !== 0) {
-        let jsonCategories = await blogApi.getSingleCategory(
+        let jsonCategories = await categoria.getSingleCategory(
           e,
           page,
           iten.link
@@ -159,12 +187,34 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
         setDataItens([]);
         setDataItens(jsonCategories.itens);
         return;
+      } else if (activeSerch === false && e === 0) {
+        const jsonPosts = await mainApi.getData(page, iten.link, valueCat);
+        setDataItens([]);
+        setDataItens(jsonPosts.itens);
       } else {
-        const jsonPosts = await blogApi.getData(page, iten.link);
+        const jsonPosts = await mainApi.getData(page, iten.link, valueCat);
+        setDataItens([]);
         setDataItens(jsonPosts.itens);
       }
     }
   };
+
+  const handleShowOrder = async () => {
+    setShowOrdernar(!showOrdernar);
+  };
+
+  const loadingItens = async () => {
+    if (valueCat === "") {
+      setValueCat("0");
+    }
+    const jsonOrderData = await mainApi.getDataOrder(iten.link, valueCat);
+    setOrderData(jsonOrderData.order);
+    loadingData();
+  };
+
+  useEffect(() => {
+    loadingItens();
+  }, [showOrdernar]);
 
   return (
     <C.Content onClick={handleClick}>
@@ -177,6 +227,9 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
       >
         <div className="title">
           {iten.name}
+          <div onClick={() => handleShowOrder()}>
+            <FaListOl />
+          </div>
           <div onClick={() => setModalPagina(true)}>
             <FaCog />
           </div>
@@ -185,10 +238,10 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
           <div className="categoryLibrary">
             <form className="globalForm">
               <select
+                style={{ padding: "10px" }}
                 value={valueCat}
                 onChange={(e) => handleCat(e.target.value)}
               >
-                <option value="0">Todos</option>
                 {categories.map((item, k) => (
                   <>
                     <option key={k} value={item.id}>
@@ -222,7 +275,7 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
           dataItes.data.map((item, k) => (
             <div className="item" key={k}>
               <div className="globalSpace">
-                {item.visivel === true ? (
+                {item.visivel === 1 ? (
                   <C.ShowItens>
                     <button
                       id={k}
@@ -314,7 +367,17 @@ export const Itens = ({ iten, categorys, img, pagina }) => {
           )}
         </div>
       </Slide>
-
+      <Slide when={showOrdernar} bottom>
+        <div className={showOrdernar === true ? "modalBg" : ""}>
+          {showOrdernar && (
+            <Ordernar
+              dataItens={orderData}
+              setShowOrdernar={setShowOrdernar}
+              link={iten.link}
+            />
+          )}
+        </div>
+      </Slide>
       <AnimatePresence exitBeforeEnter>
         {modal && (
           <Modal

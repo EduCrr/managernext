@@ -4,7 +4,7 @@ import { Default } from "../../../components/Manager/Default";
 import { FaHome, FaEnvira, FaDiceD6 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Slides } from "../../../components/Manager/slides";
-import blogApi from "../../api/blogApi";
+import slidesApi from "../../api/manager/slidesApi";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth";
 
@@ -23,7 +23,7 @@ const Slide = ({ slides }) => {
 export default Slide;
 
 export const getServerSideProps = async (context) => {
-  const slides = await blogApi.getSlidesPrivate();
+  const slides = await slidesApi.getSlidesPrivate();
 
   const session = await unstable_getServerSession(
     context.req,

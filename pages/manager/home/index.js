@@ -2,9 +2,10 @@ import { Default } from "../../../components/Manager/Default";
 import { Itens } from "../../../components/Manager/Itens";
 import { Content } from "../../../components/Manager/Content";
 import { motion } from "framer-motion";
-import blogApi from "../../api/blogApi";
+import contentApi from "../../api/manager/contentApi";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth";
+import paginaApi from "../../api/manager/paginaApi";
 
 const Home = ({ contents, pagina }) => {
   return (
@@ -33,8 +34,8 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
-  const contents = await blogApi.getCotentHome("home");
-  const pagina = await blogApi.getPagina("home");
+  const contents = await contentApi.getCotentHome("home");
+  const pagina = await paginaApi.getPagina("home");
   return {
     props: {
       contents,

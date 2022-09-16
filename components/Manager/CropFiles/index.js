@@ -15,7 +15,7 @@ export const CropFiles = ({
   const onBannerChange = async (event) => {
     if (event.target.files.length > 0) {
       setSrcImg(URL.createObjectURL(event.target.files[0]));
-      console.log(event.target.files[0]);
+      event.target.value = null;
       setShowCropImg(true);
     } else {
       setShowCropImg(false);

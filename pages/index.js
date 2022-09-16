@@ -3,7 +3,6 @@ import Image from "next/image";
 import * as C from "../styles/Site/index";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import blogApi from "./api/blogApi";
 import { useState, useEffect } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 export default function Home({ posts, categories }) {

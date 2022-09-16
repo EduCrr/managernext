@@ -1,24 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import blogApi from "../../../pages/api/blogApi";
+import categoria from "../../../pages/api/manager/categoria";
+import produtoApi from "../../../pages/api/manager/produtoApi";
+import postApi from "../../../pages/api/manager/postApi";
+import slideApi from "../../../pages/api/manager/slidesApi";
 import * as C from "./styles";
 export const Modal = ({ setModal, id, type, token }) => {
   const router = useRouter();
 
   const delImage = async () => {
     if (type === "images") {
-      let json = await blogApi.deleteImage(id, token);
+      let json = await produtoApi.deleteImage(id, token);
     } else if (type === "categorias") {
-      let json = await blogApi.deleteCat(id, token);
+      let json = await categoria.deleteCat(id, token);
     } else if (type === "categorias-produtos") {
-      let json = await blogApi.deleteCatProduct(id, token);
+      let json = await categoria.deleteCatProduct(id, token);
     } else if (type === "posts") {
-      let json = await blogApi.deletePost(id, token);
+      let json = await postApi.deletePost(id, token);
     } else if (type === "slide") {
-      let json = await blogApi.deleteSlide(id, token);
+      let json = await slideApi.deleteSlide(id, token);
     } else if (type === "produtos") {
-      let json = await blogApi.deleteProduct(id, token);
+      let json = await produtoApi.deleteProduct(id, token);
     }
     setModal(false);
     setTimeout(function () {

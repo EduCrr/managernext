@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Default } from "../../../components/Manager/Default";
 import * as C from "../../../styles/Manager/categorias";
-import blogApi from "../../api/blogApi";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -10,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { ModalSucess } from "../../../components/Manager/ModalSucess";
 import { AnimatePresence } from "framer-motion";
 import { ModalError } from "../../../components/Manager/ModalError";
+import categoria from "../../api/manager/categoria";
 const Adicionar = () => {
   const router = useRouter();
   const [title, setTitle] = useState("");
@@ -24,7 +24,7 @@ const Adicionar = () => {
   const handleForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.createCat(title, session.user.token);
+    let json = await categoria.createCat(title, session.user.token);
     if (json.error === "") {
       setModalSucess(true);
       setTitle("");

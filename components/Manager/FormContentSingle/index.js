@@ -3,12 +3,12 @@ import { useState, useEffect, useRef } from "react";
 import { FaFileAlt } from "react-icons/fa";
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
-import blogApi from "../../../pages/api/blogApi";
 import { useSession } from "next-auth/react";
 import { CropFiles } from "../CropFiles";
 import { CropItens } from "../CropItens";
 import { AnimatePresence } from "framer-motion";
 import { ModalError } from "../ModalError";
+import contentApi from "../../../pages/api/manager/contentApi";
 import { ModalSucess } from "../ModalSucess";
 const SunEditor = dynamic(() => import("suneditor-react"), {
   ssr: false,
@@ -97,7 +97,7 @@ export const FormContentSingle = ({ dataItens, path }) => {
       resultBanner !== null ||
       resultResponsive !== null
     ) {
-      let json = await blogApi.updateContent(
+      let json = await contentApi.updateContent(
         title,
         description,
         dataItens.id,
@@ -106,13 +106,13 @@ export const FormContentSingle = ({ dataItens, path }) => {
       let imagem = b64toBlob(resultBanner);
       let imagemResponsive = b64toBlob(resultResponsive);
 
-      let jsonImagem = await blogApi.updateContentImagem(
+      let jsonImagem = await contentApi.updateContentImagem(
         imagem,
         dataItens.id,
         session.user.token
       );
       console.log(jsonImagem);
-      let jsonImagemResponsive = await blogApi.updateContentImagemResponsive(
+      let jsonImagemResponsive = await contentApi.updateContentImagemResponsive(
         imagemResponsive,
         dataItens.id,
         session.user.token

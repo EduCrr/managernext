@@ -3,7 +3,6 @@ import * as C from "../../../components/Manager/FormContentSingle/styles";
 import { useState, useEffect, useRef } from "react";
 import { FaFileAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import blogApi from "../../api/blogApi";
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
 import { CropItens } from "../../../components/Manager/CropItens";
@@ -14,17 +13,21 @@ import { useSession } from "next-auth/react";
 import { ModalSucess } from "../../../components/Manager/ModalSucess";
 import { AnimatePresence } from "framer-motion";
 import { ModalError } from "../../../components/Manager/ModalError";
-
+import produtoApi from "../../api/manager/produtoApi";
+import categoria from "../../api/manager/categoria";
 const SunEditor = dynamic(() => import("suneditor-react"), {
   ssr: false,
 });
 
 const Adicionar = () => {
   const [imgFile, setImgFile] = useState([]);
-  const [bannerFile, setBannerFile] = useState();
   const [description, setDescription] = useState("");
   const [categorys, setCategorys] = useState([]);
   const [title, setTitle] = useState("");
+  const [tituloPagina, setTituloPagina] = useState("");
+  const [tituloCom, setTituloCom] = useState("");
+  const [descricaoPagina, setDescricaoPagina] = useState("");
+  const [descricaoCom, setDescricaoCom] = useState("");
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
   const [modalSucess, setModalSucess] = useState(false);
@@ -49,7 +52,7 @@ const Adicionar = () => {
 
   useEffect(() => {
     const categories = async () => {
-      let json = await blogApi.getCategoriesProductsPrivate();
+      let json = await categoria.getCategoriesProductsPrivate();
       if (json.error !== "") {
         console(json.error);
       } else {
@@ -86,14 +89,26 @@ const Adicionar = () => {
     }
   }
 
+  function handleChange(text) {
+    setDescription(text);
+    if (modalSucess === true) {
+      text = "";
+      setDescription("");
+    }
+  }
+
   const handleForm = async (e) => {
     e.preventDefault();
 
     let banner = b64toBlob(resultBanner);
     let capa = b64toBlob(resultCapa);
 
-    const json = await blogApi.addProduct(
+    const json = await produtoApi.addProduct(
       title,
+      tituloPagina,
+      tituloCom,
+      descricaoPagina,
+      descricaoCom,
       description,
       activeCategory,
       banner,
@@ -105,9 +120,16 @@ const Adicionar = () => {
     if (json.error === "") {
       setModalSucess(true);
       setTitle("");
+      setTituloCom("");
+      setTituloPagina("");
+      setDescricaoCom("");
+      setDescricaoPagina("");
       setDescription("");
       setResultBanner(null);
       setResultCapa(null);
+      setImgFile([]);
+      setActiveCategory("");
+      fotoField = "";
       return;
     } else {
       setModalSucess(false);
@@ -151,9 +173,6 @@ const Adicionar = () => {
       ],
     ],
   };
-  function handleChange(description) {
-    setDescription(description);
-  }
 
   return (
     <Default>
@@ -166,7 +185,7 @@ const Adicionar = () => {
         >
           <form className="globalForm" onSubmit={handleForm}>
             <input
-              placeholder="title"
+              placeholder="Título"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -185,6 +204,7 @@ const Adicionar = () => {
             <SunEditor
               setOptions={opitons}
               onChange={handleChange}
+              defaultValue=""
               value={description}
               placeholder="Escreva aqui..."
             />
@@ -241,6 +261,30 @@ const Adicionar = () => {
                   </div>
                 ))}
             </div>
+            <input
+              placeholder="Título da página"
+              type="text"
+              value={tituloPagina}
+              onChange={(e) => setTituloPagina(e.target.value)}
+            />
+            <input
+              placeholder="Descrição da página"
+              type="text"
+              value={descricaoPagina}
+              onChange={(e) => setDescricaoPagina(e.target.value)}
+            />
+            <input
+              placeholder="Título exibido ao compartilhar"
+              type="text"
+              value={tituloCom}
+              onChange={(e) => setTituloCom(e.target.value)}
+            />
+            <input
+              placeholder="Descrição exibida ao compartilhar"
+              type="text"
+              value={descricaoCom}
+              onChange={(e) => setDescricaoCom(e.target.value)}
+            />
             <button type="submit">Adicionar Produto</button>
           </form>
           <CropItens

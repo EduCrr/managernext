@@ -2,7 +2,8 @@ import { Default } from "../../../../components/Manager/Default";
 import * as C from "../../../../styles/Manager/editar";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import blogApi from "../../../api/blogApi";
+import postApi from "../../../api/manager/postApi";
+import categoria from "../../../api/manager/categoria";
 import dynamic from "next/dynamic";
 import "suneditor/dist/css/suneditor.min.css";
 import { useRouter } from "next/router";
@@ -32,6 +33,14 @@ const Editar = ({ post }) => {
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [title, setTitle] = useState(post.post.title);
+  const [tituloPagina, setTituloPagina] = useState(post.post.titulo_pagina);
+  const [tituloCom, setTituloCom] = useState(post.post.descricao_pagina);
+  const [descricaoPagina, setDescricaoPagina] = useState(
+    post.post.titulo_compartilhamento
+  );
+  const [descricaoCom, setDescricaoCom] = useState(
+    post.post.descricao_compartilhamento
+  );
   const [idImgDel, setIdImgDel] = useState(null);
   const [activeCategory, setActiveCategory] = useState(post.post.category.id);
   const [day, setDay] = useState("");
@@ -60,7 +69,7 @@ const Editar = ({ post }) => {
 
   useEffect(() => {
     const categories = async () => {
-      let json = await blogApi.getCategories();
+      let json = await categoria.getCategories();
       if (json.error !== "") {
         console(json.error);
       } else {
@@ -165,8 +174,12 @@ const Editar = ({ post }) => {
   const handleSaveForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.updatePost(
+    let json = await postApi.updatePost(
       title,
+      tituloPagina,
+      tituloCom,
+      descricaoPagina,
+      descricaoCom,
       description,
       activeCategory,
       day,
@@ -181,7 +194,7 @@ const Editar = ({ post }) => {
     } else {
       if (changeBanner === true && resultBanner !== null) {
         let banner = b64toBlob(resultBanner);
-        let json = await blogApi.updateBanner(banner, id, session.user.token);
+        let json = await postApi.updateBanner(banner, id, session.user.token);
         if (json.error !== "") {
           setModalErro(true);
           setTextErro(
@@ -215,13 +228,14 @@ const Editar = ({ post }) => {
     <Default>
       <C.Content>
         <motion.div initial="hidden" animate="enter" exit="exit">
-          <h2>{title}</h2>
           <form className="globalForm" onSubmit={handleSaveForm}>
+            <p className="nameInput">Título</p>
             <input
               placeholder="Titulo"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+            <p className="nameInput">Categoria</p>
             <select
               value={activeCategory}
               onChange={(e) => setActiveCategory(e.target.value)}
@@ -233,6 +247,7 @@ const Editar = ({ post }) => {
                 </option>
               ))}
             </select>
+            <p className="nameInput">Descrição</p>
             <SunEditor
               setOptions={opitons}
               value={description}
@@ -241,6 +256,7 @@ const Editar = ({ post }) => {
               placeholder="Escreva aqui..."
               onImageUploadBefore={handleImageUploadBefore}
             />
+            <p className="nameInput">Data da postagem</p>
             <DatePicker
               locale="pt"
               selected={startDate}
@@ -257,9 +273,36 @@ const Editar = ({ post }) => {
               setShowCropImg={setShowCropBanner}
               setResult={setResultBanner}
             />
+            <p className="nameInput">Título da página</p>
+            <input
+              placeholder="Título da página"
+              type="text"
+              value={tituloPagina}
+              onChange={(e) => setTituloPagina(e.target.value)}
+            />
+            <p className="nameInput">Descrição da página</p>
+            <input
+              placeholder="Descrição da página"
+              type="text"
+              value={descricaoPagina}
+              onChange={(e) => setDescricaoPagina(e.target.value)}
+            />
+            <p className="nameInput">Título exibido ao compartilhar</p>
+            <input
+              placeholder="Título exibido ao compartilhar"
+              type="text"
+              value={tituloCom}
+              onChange={(e) => setTituloCom(e.target.value)}
+            />
+            <p className="nameInput">Descrição exibida ao compartilhar</p>
+            <input
+              placeholder="Descrição exibida ao compartilhar"
+              type="text"
+              value={descricaoCom}
+              onChange={(e) => setDescricaoCom(e.target.value)}
+            />
             <button type="submit">Salvar</button>
           </form>
-
           <CropItens
             srcImg={srcImg}
             showCropImg={showCropBanner}
@@ -286,7 +329,7 @@ const Editar = ({ post }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const post = await blogApi.getSinglePost(context.query.id);
+  const post = await postApi.getSinglePost(context.query.id);
   const session = await unstable_getServerSession(
     context.req,
     context.res,

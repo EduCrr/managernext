@@ -6,5 +6,6 @@ export const Content = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 20px;
+    align-items: flex-end;
   }
 `;

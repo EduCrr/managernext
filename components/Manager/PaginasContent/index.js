@@ -6,8 +6,8 @@ import { CropItens } from "../CropItens";
 import { AnimatePresence } from "framer-motion";
 import { ModalError } from "../ModalError";
 import { ModalSucess } from "../ModalSucess";
-import blogApi from "../../../pages/api/blogApi";
 import { useSession } from "next-auth/react";
+import paginaApi from "../../../pages/api/manager/paginaApi";
 
 export const PaginasContent = ({ pagina, modalPagina }) => {
   const [titulo, setTitulo] = useState(pagina[0].titulo);
@@ -48,7 +48,7 @@ export const PaginasContent = ({ pagina, modalPagina }) => {
   const handleForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.updatePagina(
+    let json = await paginaApi.updatePagina(
       titulo,
       descricao,
       tituloCom,
@@ -58,7 +58,7 @@ export const PaginasContent = ({ pagina, modalPagina }) => {
     );
     let imagem = b64toBlob(resultBanner);
 
-    let jsonImagem = await blogApi.updatePaginaImagem(
+    let jsonImagem = await paginaApi.updatePaginaImagem(
       imagem,
       pagina[0].id,
       session.user.token

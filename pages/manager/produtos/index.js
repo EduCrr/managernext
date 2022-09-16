@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Default } from "../../../components/Manager/Default";
 import { Itens } from "../../../components/Manager/Itens";
-import blogApi from "../../api/blogApi";
+import produtoApi from "../../api/manager/produtoApi";
+import categoriaApi from "../../api/manager/categoria";
+import mainApi from "../../api/manager/mainApi";
+import paginaApi from "../../api/manager/paginaApi";
 import { authOptions } from "../../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth";
 
@@ -16,15 +19,15 @@ const Produtos = ({ products, categorys, pagina }) => {
 export default Produtos;
 
 export const getServerSideProps = async (context) => {
-  const products = await blogApi.getProductsPrivate();
-  const categorys = await blogApi.getCategoriesProductsPrivate();
+  const products = await produtoApi.getProductsPrivate();
+  const categorys = await categoriaApi.getCategoriesProductsPrivate();
   const session = await unstable_getServerSession(
     context.req,
     context.res,
     authOptions
   );
 
-  const pagina = await blogApi.getPagina("produtos");
+  const pagina = await paginaApi.getPagina("produtos");
 
   if (!session) {
     return {

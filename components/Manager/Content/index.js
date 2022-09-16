@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { PaginasContent } from "../PaginasContent";
 import { FormContentSingle } from "../formContentSingle";
 import Slide from "react-reveal/Slide";
-
+import { FaCog } from "react-icons/fa";
 export const Content = ({ contents, pagina }) => {
   const [contentsFields, setContentsFieds] = useState(contents.content);
   let path = contents.path;
@@ -32,7 +32,9 @@ export const Content = ({ contents, pagina }) => {
     <C.Content onClick={handleClick}>
       <div className="headerContent">
         <h3>Conteúdos</h3>
-        <button onClick={() => setModalPagina(true)}>Abrir</button>
+        <div style={{ cursor: "pointer" }} onClick={() => setModalPagina(true)}>
+          <FaCog />
+        </div>
       </div>
       <Slide when={modalPagina} bottom>
         <div className={modalPagina === true ? "modalBg" : ""}>

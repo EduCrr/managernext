@@ -1,18 +1,21 @@
 import Link from "next/link";
 import * as C from "./styles";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaListOl } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import blogApi from "../../../pages/api/blogApi";
+import categoria from "../../../pages/api/manager/categoria";
 import { Modal } from "../Modal";
 import { AnimatePresence } from "framer-motion";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { useSession } from "next-auth/react";
 import { Ordernar } from "../Ordenar";
+import Slide from "react-reveal/Slide";
+
 export const CatItens = ({ categorys }) => {
   const [cats, setCats] = useState(categorys);
   const [modal, setModal] = useState(false);
   const [idCat, setIdCat] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showOrdernar, setShowOrdernar] = useState(false);
 
   TopBarProgress.config({
     barColors: {
@@ -39,14 +42,14 @@ export const CatItens = ({ categorys }) => {
       v = false;
     }
     setLoading(true);
-    let json = await blogApi.changeVisivelCategory(
+    let json = await categoria.changeVisivelCategory(
       id,
       v,
       link,
       session.user.token
     );
     setLoading(false);
-    let jsonCat = await blogApi.getCategoriesVisivelPrivate(categorys.link);
+    let jsonCat = await categoria.getCategoriesVisivelPrivate(categorys.link);
     if (jsonCat.error === "") {
       console.log(jsonCat);
       setCats(jsonCat);
@@ -57,17 +60,33 @@ export const CatItens = ({ categorys }) => {
 
   return (
     <C.Content>
-      <Ordernar dataItens={cats.categories} />
+      <Slide when={showOrdernar} bottom>
+        <div className={showOrdernar === true ? "modalBg" : ""}>
+          {showOrdernar && (
+            <Ordernar
+              dataItens={cats.categories}
+              setShowOrdernar={setShowOrdernar}
+              link={categorys.link}
+            />
+          )}
+        </div>
+      </Slide>
+
       {loading && <TopBarProgress />}
       <div className="init">
         <h2>Categorias</h2>
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowOrdernar(!showOrdernar)}
+        >
+          <FaListOl />
+        </div>
         <Link href={`/manager/${categorys.link}/adicionar`}>
           <a>Adicionar</a>
         </Link>
       </div>
       {cats.categories.map((item, k) => (
         <div className="containerCategorys" key={k}>
-          <div className="id">#{item.id}</div>
           <div className="name">{item.name}</div>
           {item.visivel === 1 ? (
             <div className="btns">

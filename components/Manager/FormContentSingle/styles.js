@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const Content = styled.div`
   width: 100%;
   margin: 1rem auto;
-  padding: 0px 20px;
+  padding: 0px 5px;
   form {
     max-width: 1100px;
     display: flex;

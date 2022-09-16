@@ -2,13 +2,13 @@ import { Default } from "../../../../components/Manager/Default";
 import * as C from "../../../../styles/Manager/categorias";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import blogApi from "../../../api/blogApi";
 import { authOptions } from "../../../api/auth/[...nextauth]";
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import { AnimatePresence } from "framer-motion";
 import { ModalSucess } from "../../../../components/Manager/ModalSucess";
 import { ModalError } from "../../../../components/Manager/ModalError";
+import categoria from "../../../api/manager/categoria";
 const Editar = ({ category }) => {
   console.log(category);
   const [title, setTitle] = useState(category.name);
@@ -20,7 +20,7 @@ const Editar = ({ category }) => {
   const handleForm = async (e) => {
     e.preventDefault();
 
-    let json = await blogApi.updateCatProduct(
+    let json = await categoria.updateCatProduct(
       title,
       category.id,
       session.user.token
@@ -38,8 +38,8 @@ const Editar = ({ category }) => {
     <Default>
       <C.Content>
         <motion.div initial="hidden" animate="enter" exit="exit">
-          <h2>{title}</h2>
           <form className="globalForm" onSubmit={handleForm}>
+            <p className="nameInput">Título</p>
             <input
               placeholder="Título"
               value={title}
@@ -62,7 +62,7 @@ const Editar = ({ category }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const { category } = await blogApi.getSingleCategoryProductEdit(
+  const { category } = await categoria.getSingleCategoryProductEdit(
     context.query.id
   );
 

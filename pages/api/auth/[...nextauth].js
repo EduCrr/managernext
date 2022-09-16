@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import blogApi from "../blogApi";
+import mainApi from "../manager/mainApi";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -13,7 +13,7 @@ export const authOptions = {
       },
       authorize: async (credentials, req) => {
         if (credentials && credentials.email && credentials.password) {
-          const user = await blogApi.loginUser(
+          const user = await mainApi.loginUser(
             credentials.password,
             credentials.email
           );

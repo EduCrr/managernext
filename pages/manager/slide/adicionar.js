@@ -3,7 +3,7 @@ import * as C from "../../../components/Manager/FormContentSingle/styles";
 import { useState, useEffect, useRef } from "react";
 import { FaFileAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import blogApi from "../../api/blogApi";
+import slidesApi from "../../api/manager/slidesApi";
 import { CropItens } from "../../../components/Manager/CropItens";
 import { CropFiles } from "../../../components/Manager/CropFiles";
 import { authOptions } from "../../api/auth/[...nextauth]";
@@ -49,7 +49,7 @@ const Adicionar = () => {
 
     let imagem = b64toBlob(resultBanner);
 
-    const json = await blogApi.addSlide(title, imagem, session.user.token);
+    const json = await slidesApi.addSlide(title, imagem, session.user.token);
 
     if (json.error === "") {
       setModalSucess(true);
@@ -68,7 +68,12 @@ const Adicionar = () => {
   return (
     <Default>
       <C.Content>
-        <motion.div initial="hidden" animate="enter" exit="exit">
+        <motion.div
+          initial="hidden"
+          animate="enter"
+          exit="exit"
+          style={{ padding: "0px 20px" }}
+        >
           <form className="globalForm" onSubmit={handleForm}>
             <input
               placeholder="Título"
